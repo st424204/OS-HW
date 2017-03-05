@@ -9,6 +9,6 @@ int main(int argc,char** argv){
 		else if(strcmp(argv[i],"-t")==0) timeout=argv[i+1];
 	}
 	char command[1024];
-	sprintf(command,"ssh %s \'timeout %s cpulimit -l %s matho-primes 0 9999999999 > /dev/null &\'",ip,timeout,limit);
+	sprintf(command,"ssh %s \'timeout %s cpulimit -l %s cpu100 &\'",ip,timeout,limit);
 	system(command);
 }
