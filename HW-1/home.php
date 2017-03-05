@@ -51,7 +51,7 @@ setInterval(function(){
         $.ajax({url: "api.php", success: function(result){
             $("#div1").html(result);
         }});
-},3000);
+},1500);
 
 </script>
 
