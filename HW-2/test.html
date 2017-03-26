@@ -1,0 +1,75 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<div id="chart_div"></div>
+      
+
+
+<script type='text/javascript'>
+
+google.charts.load('current', {packages: ['corechart', 'line']});
+google.charts.setOnLoadCallback(drawBasic);
+
+
+var chart,options;
+var d=[];
+var host=[];
+for(var i=-1;i>=-10;i--) d.unshift([i,0,0,0]);
+function drawBasic() {
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('number', 'X');
+      data.addColumn('number', 'master');
+      data.addColumn('number', 'slave1');
+      data.addColumn('number', 'slave2');
+      data.addRows(d);
+      options = {
+        hAxis: {
+          title: 'Time',
+          gridlines: { count: 10 },
+          ticks: [-1, -2, -3, -4, -5, -6, -7, -8, -9, -10]
+	},
+        vAxis: {
+          title: 'CPU loading(%)',
+	  gridlines: { count: 10 },
+          ticks: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        },
+	width: 500,
+        height: 300,
+        
+      };
+
+      chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+}
+function drawChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('number', 'X');
+    //data.addColumn('number', 'master');
+    //data.addColumn('number', 'slave1');
+    //data.addColumn('number', 'slave2');
+    for(var i=0;i<host.length;i++) data.addColumn('number', host[i]);
+    data.addRows(d);
+    chart.draw(data, options);
+}
+
+setInterval(function(){
+        $.ajax({url: "check.php", success: function(result){
+           
+	    result = result.split(",");
+	    host=[];
+            var val=[-1];
+	    for(var i=0;i<result.length/2;i++) host.push(result[i]);
+	    for(var i=result.length/2;i<result.length;i++) val.push(parseInt(result[i]));
+	    var index = -1;
+	    d.shift();	
+            for(var i=0;i<d.length;i++) d[i][0] = d[i][0]-1;
+            d.push(val);
+	    drawChart();
+	    
+        }});
+},1000);
+
+
+</script>
