@@ -1,0 +1,11 @@
+init Alice 1000
+init alice 500 // error for registered account
+init JOHN 500
+init john 1000 // error for registered account
+save aLice 1000
+load alIce 1000
+load joHN 1000 // error for not have enough money
+save joHn 500
+load john 1000
+remit alice BoBo 1000 // error for unregistered account 'BoBo'
+end

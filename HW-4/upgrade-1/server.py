@@ -13,29 +13,29 @@ def money_check(s):
 		return n
 
 
-r = redis.Redis(host='localhost',port=6379,db=0)
+r = redis.Redis(host='node1',port=6379,db=0)
 
 sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
-server_address = ('localhost',8888)
+server_address = ('node1',8888)
 
-print >>sys.stderr,'starting up on %s port %s'%server_address
+#print >>sys.stderr,'starting up on %s port %s'%server_address
 sock.bind(server_address)
 sock.listen(1)
 
 while 1:
-	print >> sys.stderr,'waiting for a connection'
+#	print >> sys.stderr,'waiting for a connection'
 	connection , client_address = sock.accept()
 	try:
-		print >> sys.stderr,'connection from',client_address
+#		print >> sys.stderr,'connection from',client_address
 		while 1:
 			data = connection.recv(1024)
 			if data == 'end':
 				connection.sendall(json.dumps(r.hgetall('mybank')))
-				print >> sys.stderr,'no more data from',client_address
+#				print >> sys.stderr,'no more data from',client_address
 				break
 			elif data:
-				print >> sys.stderr,'received "%s"'%data
+#				print >> sys.stderr,'received "%s"'%data
 				args = data.split()
 				if args[0]=='init':
 					account = args[1].lower()
@@ -79,10 +79,10 @@ while 1:
 						data += ",%s,%s,%d"%(account_B,r.hget('mybank',account_B),succ)
 				else:
 					data = "error"
-				print >> sys.stderr,'sending "%s" back to the client'%(data)
+#				print >> sys.stderr,'sending "%s" back to the client'%(data)
 				connection.sendall(data)
 			else:
-				print >> sys.stderr,'no more data from',client_address
+#				print >> sys.stderr,'no more data from',client_address
 				break;
 	finally:
 		connection.close()
