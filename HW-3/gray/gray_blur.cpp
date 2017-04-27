@@ -44,6 +44,12 @@ int main( int argc, char** argv )
 			MPI_Send(&width,1, MPI_INT, other_rank, 0, MPI_COMM_WORLD);
 			MPI_Send(&type,1, MPI_INT, other_rank, 0, MPI_COMM_WORLD);
 			MPI_Send(image.data+block_h*(other_rank-1)*width*1,block_h*width*1, MPI_BYTE, other_rank, 0, MPI_COMM_WORLD);
+
+			if(other_rank==1) MPI_Send(image.data,width*1, MPI_BYTE, other_rank, 0, MPI_COMM_WORLD);
+			else MPI_Send(image.data+block_h*(other_rank-1)*width*1-width*1,width*1, MPI_BYTE, other_rank, 0, MPI_COMM_WORLD);
+			
+			MPI_Send(image.data+block_h*(other_rank)*width*1,width*1, MPI_BYTE, other_rank, 0, MPI_COMM_WORLD);
+			
 		}
 
 		// last process	
@@ -52,6 +58,9 @@ int main( int argc, char** argv )
 		MPI_Send(&width,1, MPI_INT, num_procs-1, 0, MPI_COMM_WORLD);
 		MPI_Send(&type,1, MPI_INT, num_procs-1, 0, MPI_COMM_WORLD);
 		MPI_Send(image.data+block_h*(num_procs-2)*width*1,last_h*width*1, MPI_BYTE, num_procs-1, 0, MPI_COMM_WORLD);
+		
+		MPI_Send(image.data+block_h*(num_procs-2)*width*1-width*1,width*1, MPI_BYTE, num_procs-1, 0, MPI_COMM_WORLD);
+		MPI_Send(image.data+(height-1)*width*1,width*1, MPI_BYTE, other_rank, 0, MPI_COMM_WORLD);
 
 
 		Mat image2(Size(width,height),type);
@@ -73,7 +82,13 @@ int main( int argc, char** argv )
 		MPI_Recv(&type, 1, MPI_INT, 0,0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
 		Mat refer(Size(width,height),type);
-		MPI_Recv(refer.data, height*width*1, MPI_BYTE, 0,0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		MPI_Recv(refer.data+width*1, height*width*1, MPI_BYTE, 0,0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		
+				
+		MPI_Recv(refer.data, 1*width*1, MPI_BYTE, 0,0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		MPI_Recv(refer.data+(height-1)*width*1, 1*width*1, MPI_BYTE, 0,0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		
+		
 		Mat image(Size(width,height),type);
 		int weight[3][3]={1,2,1,2,4,2,1,2,1};
 		for(int i=0; i < height;i++){
@@ -81,10 +96,8 @@ int main( int argc, char** argv )
 				int val = 0,total=0;
 				for(int a=0;a<3;a++){
 					for(int b=0;b<3;b++){
-						int x=i-1+a,y=j-1+b;
-						if(x >= height) x = height-1;
+						int x=i-1+1+a,y=j-1+b;
 						if(y >= width) y = width-1;
-						if(x<0) x=0;
 						if(y<0) y=0;
 						val+=refer.at<uchar>(x,y)*weight[a][b];
 						total+=weight[a][b];
