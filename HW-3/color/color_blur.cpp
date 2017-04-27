@@ -60,7 +60,7 @@ int main( int argc, char** argv )
 		MPI_Send(image.data+block_h*(num_procs-2)*width*3,last_h*width*3, MPI_BYTE, num_procs-1, 0, MPI_COMM_WORLD);
 		
 		MPI_Send(image.data+block_h*(num_procs-2)*width*3-width*3,width*3, MPI_BYTE, num_procs-1, 0, MPI_COMM_WORLD);
-		MPI_Send(image.data+(height-1)*width*3,width*3, MPI_BYTE, other_rank, 0, MPI_COMM_WORLD);
+		MPI_Send(image.data+(height-1)*width*3,width*3, MPI_BYTE, num_procs-1, 0, MPI_COMM_WORLD);
 
 		Mat image2(Size(width,height),type);
 
@@ -84,7 +84,7 @@ int main( int argc, char** argv )
 		MPI_Recv(refer.data+1*width*3, height*width*3, MPI_BYTE, 0,0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		
 		MPI_Recv(refer.data, 1*width*3, MPI_BYTE, 0,0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		MPI_Recv(refer.data+(height-1)*width*3, 1*width*3, MPI_BYTE, 0,0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		MPI_Recv(refer.data+(height+1)*width*3, 1*width*3, MPI_BYTE, 0,0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
 		Mat image(Size(width,height),type);
 		int weight[3][3]={1,2,1,2,4,2,1,2,1};
