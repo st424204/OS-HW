@@ -35,7 +35,7 @@ try:
 #		print >> sys.stderr,'sending "%s"'%message
 		sock = sockets[count%3]
 		sock.sendall(message)
-		data = sock.recv(1024)
+		data = sock.recv(1024000)
 		if message == 'end' :
 			output = json.loads(data)
                         break
@@ -48,7 +48,7 @@ try:
 
 finally:
 #	print >> sys.stderr,'closing socket'
-	output = sorted(output.items(), key=cmp,reverse=True)
+	output = sorted(output.items(), key=cmp,reverse=False)
 #	print output
 	for a,b in output:
 		print '%s : %s'%(a,b)

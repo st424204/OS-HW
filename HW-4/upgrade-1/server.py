@@ -29,7 +29,7 @@ while 1:
 	try:
 #		print >> sys.stderr,'connection from',client_address
 		while 1:
-			data = connection.recv(1024)
+			data = connection.recv(1024000)
 			if data == 'end':
 				connection.sendall(json.dumps(r.hgetall('mybank')))
 #				print >> sys.stderr,'no more data from',client_address
