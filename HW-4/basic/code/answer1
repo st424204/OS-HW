@@ -1,0 +1,15 @@
+// 1 : init Alice 1000
+// 2 : init John 1000
+// 3 : init Andy 500
+// 4 : save Alice 1000
+// 5 : save Andy 2000
+// 6 : load John 1000
+// 7 : remit Alice John 1500
+// 8 : remit Andy John 2500
+// end
+//--------//
+alice : 500
+andy : 0
+john : 4000
+
+success rate : (8/8)

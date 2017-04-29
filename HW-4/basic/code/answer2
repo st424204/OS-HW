@@ -1,0 +1,15 @@
+// 1 : init Alice 1000
+// 2 error : init alice 500
+// 3 : init JOHN 500
+// 4 error : init john 1000
+// 5 : save aLice 1000
+// 6 : load alIce 1000
+// 7 error : load joHN 1000
+// 8 : save joHn 500
+// 9 : load john 1000
+// 10 error : remit alice BoBo 1000
+
+alice : 1000
+john : 0
+
+success rate : (6/10)

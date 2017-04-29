@@ -32,6 +32,7 @@ while 1:
 			data = connection.recv(1024)
 			if data == 'end':
 				connection.sendall(json.dumps(r.hgetall('mybank')))
+				r.flushdb()
 #				print >> sys.stderr,'no more data from',client_address
 				break
 			elif data:
@@ -71,7 +72,7 @@ while 1:
 					money = money_check(args[3])
 					data = "error"
                                         succ = 0
-					if money >= 0 and r.hexists('mybank',account_A) and r.hexists('mybank',account_B) and int(r.hget('mybank',account_A)) >= money :
+					if money >= 0 and r.hexists('mybank',account_A) and r.hexists('mybank',account_B) and int(r.hget('mybank',account_A)) >= money and account_A != account_B:
 						succ = 1
 						r.hincrby('mybank',account_A,money*-1)
 						r.hincrby('mybank',account_B,money)

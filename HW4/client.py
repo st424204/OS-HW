@@ -3,22 +3,6 @@ import socket
 import sys
 import operator
 import json
-import re
-r = re.compile("([a-zA-Z]*)([0-9]*)")
-
-def cmp(x):
-	a = r.match(x[0])
-	try:
-		b = a.group(1)
-	except IndexError:
-		b = ""
-	try:
-                c = a.group(2)
-        except IndexError:
-                c = "0" 
-	if c=='':
-		c="0"
-	return (b,int(c))
 
 sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 server_address = ('localhost',8888)
@@ -33,7 +17,7 @@ try:
 	for message in input:
 #		print >> sys.stderr,'sending "%s"'%message
 		sock.sendall(message)
-		data = sock.recv(1000000)
+		data = sock.recv(1024)
 		if message == 'end' :
 			output = json.loads(data)
                         break
@@ -46,7 +30,7 @@ try:
 
 finally:
 #	print >> sys.stderr,'closing socket'
-	output = sorted(output.items(), key=cmp,reverse=False)
+	output = sorted(output.items(), key=lambda x: int(x[1]),reverse=True)
 #	print output
 	for a,b in output:
 		print '%s : %s'%(a,b)
