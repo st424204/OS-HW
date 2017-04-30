@@ -1,5 +1,5 @@
 import socket,sys,redis,json,select
-from redlock import Redlock
+from redlock import RedLock
 
 def money_check(s):
 	try:
@@ -39,49 +39,53 @@ while 1:
 					account = args[1].lower()
 					money = money_check(args[2])
 					if money >= 0 and r.exists(account) == False :
-						account_lock = dlm.lock(account,1000000)
-						while account_lock == False:
-							account_lock = dlm.lock(account,1000000)
+						account_lock = RedLock("distributed_lock",resource=account,connection_details=[
+							{'host': 'node1', 'port': 6379, 'db': 0},
+						])
+						account_lock.acquire()
 						r.set(account,money)
-						dlm.unlock(account_lock)
+						account_lock.release()
 						data = "ok"
 				elif args[0]=='save':
 					account = args[1].lower()
 					money = money_check(args[2])
 					if money >= 0 and r.exists(account):
-						account_lock = dlm.lock(account,1000000)
-						while account_lock == False:
-							account_lock = dlm.lock(account,1000000)
+						account_lock = RedLock("distributed_lock",resource=account,connection_details=[
+							{'host': 'node1', 'port': 6379, 'db': 0},
+						]))
+						account_lock.acquire()
 						r.incr(account,money)
-						dlm.unlock(account_lock)
+						account_lock.release()
 						data = "ok"
 				elif args[0]=='load':
 					account = args[1].lower()
 					money = money_check(args[2])
 					if money >= 0 and r.exists(account) and int(r.get(account)) >= money :
-						account_lock = dlm.lock(account,1000000)
-						while account_lock == False:
-							account_lock = dlm.lock(account,1000000)
-                        			r.decr(account,money)
-						dlm.unlock(account_lock)
-                        			data = "ok"
+						account_lock = RedLock("distributed_lock",resource=account,connection_details=[
+							{'host': 'node1', 'port': 6379, 'db': 0},
+						]))
+						account_lock.acquire()
+						r.decr(account,money)
+						account_lock.release()
+						data = "ok"
 				elif args[0]=='remit':
 					account_A = args[1].lower()
 					account_B = args[2].lower()
 					money = money_check(args[3])
 					if money >= 0 and r.exists(account_A) and r.exists(account_B) and int(r.get(account_A)) >= money and account_A!=account_B:
 						succ = 1
-						account_A_lock = dlm.lock(account_A,1000000)
-						while account_A_lock == False:
-							account_A_lock = dlm.lock(account_A,1000000)
-							
-						account_B_lock = dlm.lock(account_B,1000000)
-						while account_B_lock == False:
-							account_B_lock = dlm.lock(account_B,1000000)
+						account_A_lock = RedLock("distributed_lock",resource=account_A,connection_details=[
+							{'host': 'node1', 'port': 6379, 'db': 0},
+						]))
+						account_B_lock = RedLock("distributed_lock",resource=account_B,connection_details=[
+							{'host': 'node1', 'port': 6379, 'db': 0},
+						]))
+						account_A_lock.acquire()
+						account_B_lock.acquire()
 						r.decr(account_A,money)
 						r.incr(account_B,money)
-						dlm.unlock(account_A_lock)
-						dlm.unlock(account_B_lock)
+						account_A_lock.release()
+						account_B_lock.release()
 						data = "ok"
 				connection.sendall(data)
 			else:
