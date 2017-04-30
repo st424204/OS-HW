@@ -56,9 +56,9 @@ while 1:
 					money = money_check(args[2])
 					if money >= 0 and r.exists(account) and int(r.get(account)) >= money :
 						account_lock = dlm.lock(account,1000)
-                        r.decr(account,money)
+                        			r.decr(account,money)
 						dlm.unlock(account_lock)
-                        data = "ok"
+                        			data = "ok"
 				elif args[0]=='remit':
 					account_A = args[1].lower()
 					account_B = args[2].lower()
