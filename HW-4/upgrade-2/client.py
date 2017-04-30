@@ -22,7 +22,7 @@ def cmp(x):
 	return (b,int(c))
 
 
-sockets = list(3)
+sockets = [0,0,0]
 for i in range(3):
 	sockets[i] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	sockets[i].connect(('node%d'%(i+1),8888))
@@ -48,7 +48,7 @@ while output == "" :
 		data = s.recv(1024)
 		if data == 'end' :
 			data = s.recv(1024)
-			data = s.recv(int(dat))
+			data = s.recv(int(data))
 			output = json.loads(data)
 		else: 
 			if data != 'error' :
