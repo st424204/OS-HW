@@ -40,6 +40,8 @@ while 1:
 					money = money_check(args[2])
 					if money >= 0 and r.exists(account) == False :
 						account_lock = dlm.lock(account,1000)
+						while account_lock == False:
+							account_lock = dlm.lock(account,1000)
 						r.set(account,money)
 						dlm.unlock(account_lock)
 						data = "ok"
@@ -48,6 +50,8 @@ while 1:
 					money = money_check(args[2])
 					if money >= 0 and r.exists(account):
 						account_lock = dlm.lock(account,1000)
+						while account_lock == False:
+							account_lock = dlm.lock(account,1000)
 						r.incr(account,money)
 						dlm.unlock(account_lock)
 						data = "ok"
@@ -56,6 +60,8 @@ while 1:
 					money = money_check(args[2])
 					if money >= 0 and r.exists(account) and int(r.get(account)) >= money :
 						account_lock = dlm.lock(account,1000)
+						while account_lock == False:
+							account_lock = dlm.lock(account,1000)
                         			r.decr(account,money)
 						dlm.unlock(account_lock)
                         			data = "ok"
@@ -66,7 +72,12 @@ while 1:
 					if money >= 0 and r.exists(account_A) and r.exists(account_B) and int(r.get(account_A)) >= money and account_A!=account_B:
 						succ = 1
 						account_A_lock = dlm.lock(account_A,1000)
+						while account_A_lock == False:
+							account_A_lock = dlm.lock(account_A,1000)
+							
 						account_B_lock = dlm.lock(account_B,1000)
+						while account_B_lock == False:
+							account_B_lock = dlm.lock(account_B,1000)
 						r.decr(account_A,money)
 						r.incr(account_B,money)
 						dlm.unlock(account_A_lock)
