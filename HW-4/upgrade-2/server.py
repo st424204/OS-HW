@@ -10,7 +10,7 @@ def money_check(s):
 		return n
 
 r = redis.Redis(host='node1',port=6379,db=0)
-dlm = Redlock([{"host": "node1", "port": 6379, "db": 0}, ])
+
 
 sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 server_address = ('node1',8888)
@@ -52,7 +52,7 @@ while 1:
 					if money >= 0 and r.exists(account):
 						account_lock = RedLock("distributed_lock",resource=account,connection_details=[
 							{'host': 'node1', 'port': 6379, 'db': 0},
-						]))
+						])
 						account_lock.acquire()
 						r.incr(account,money)
 						account_lock.release()
@@ -63,7 +63,7 @@ while 1:
 					if money >= 0 and r.exists(account) and int(r.get(account)) >= money :
 						account_lock = RedLock("distributed_lock",resource=account,connection_details=[
 							{'host': 'node1', 'port': 6379, 'db': 0},
-						]))
+						])
 						account_lock.acquire()
 						r.decr(account,money)
 						account_lock.release()
@@ -76,10 +76,10 @@ while 1:
 						succ = 1
 						account_A_lock = RedLock("distributed_lock",resource=account_A,connection_details=[
 							{'host': 'node1', 'port': 6379, 'db': 0},
-						]))
+						])
 						account_B_lock = RedLock("distributed_lock",resource=account_B,connection_details=[
 							{'host': 'node1', 'port': 6379, 'db': 0},
-						]))
+						])
 						account_A_lock.acquire()
 						account_B_lock.acquire()
 						r.decr(account_A,money)
