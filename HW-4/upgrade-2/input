@@ -1,0 +1,9 @@
+init Alice 1000
+init John 1000
+init Andy 500
+save Alice 1000
+save Andy 2000
+load John 1000
+remit Alice John 1500
+remit Andy John 2500
+end
