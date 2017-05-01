@@ -1,8 +1,4 @@
-import socket
-import sys
-import operator
-import json
-import threading,select,time
+import socket,sys,operator,json,threading,select,time
 
 import re
 r = re.compile("([a-zA-Z]*)([0-9]*)")
@@ -26,7 +22,7 @@ sockets = [0,0,0]
 for i in range(3):
 	sockets[i] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	sockets[i].connect(('node%d'%(i+1),8888))
-#	sockets[i].setblocking(0)
+	sockets[i].setblocking(0)
 
 def sendcommand(messages,sockets,delay):
 	for i in range(len(messages)-1):
@@ -44,15 +40,12 @@ total = 0
 succ = 0
 output = dict()
 while sockets :
-#	readable, writable, exceptional = select.select(sockets,[], [])
-	for s in sockets:
+	readable, writable, exceptional = select.select(sockets, [], [])
+	for s in readable:
 		data = s.recv(1024)
-#		if data:
-#			print data
 		if data :
 			data_list = data.split('\n')
-                        for data in data_list:
-#				print data
+            for data in data_list:
 				if data and data != 'error' :
 					data = json.loads(data)
 					output.update(data)

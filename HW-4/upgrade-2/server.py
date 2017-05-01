@@ -10,7 +10,9 @@ def money_check(s):
 		return n
 
 r = redis.Redis(host='node1',port=6379,db=0)
-
+lock = RedLock("lock",connection_details=[
+	{'host': 'node1', 'port': 6379, 'db': 0},
+])
 
 sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 server_address = ('node1',8888)
@@ -23,19 +25,15 @@ while 1:
 	try:
 		while 1:
 			data = connection.recv(1024)
-			if data:
+			if data and over == 0:
 				data_list = data.split('\n')
-				print data_list
 				for data in data_list:
-					print data
 					if data == 'end':
 						over = 1
+						r.flushdb()
 						break
 					if len(data) == 0:
 						break
-					lock = RedLock("lock",connection_details=[
-						{'host': 'node1', 'port': 6379, 'db': 0},
-					])
 					lock.acquire()
 					args = data.split()
 					data = "error"
@@ -78,8 +76,6 @@ while 1:
 					connection.sendall(data+"\n")
 					lock.release()
 			else:
-				break;
-			if over:
 				break;
 	finally:
 		connection.close()
