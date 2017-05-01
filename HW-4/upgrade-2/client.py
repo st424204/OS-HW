@@ -22,30 +22,29 @@ sockets = [0,0,0]
 for i in range(3):
 	sockets[i] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	sockets[i].connect(('node%d'%(i+1),8888))
-	sockets[i].setblocking(0)
+#	sockets[i].setblocking(0)
 
 def sendcommand(messages,sockets,delay):
-	for i in range(len(messages)-1):
+	for i in range(len(messages)):
 		time.sleep(delay)
 		sockets[i%3].sendall(messages[i]+"\n")
 	for i in range(3):
-		sockets[i].sendall('end')
+		sockets[i].sendall('over')
 
 messages = open(sys.argv[1],'r').read()
 messages = messages.split('\n')
 
-threading.Thread(target=sendcommand,args=(messages,sockets,.01)).start()
+threading.Thread(target=sendcommand,args=(messages,sockets,.08)).start()
 
 total = 0
 succ = 0
 output = dict()
 while sockets :
-	readable, writable, exceptional = select.select(sockets, [], [])
-	for s in readable:
+	for s in sockets:
 		data = s.recv(1024)
 		if data :
 			data_list = data.split('\n')
-            for data in data_list:
+            		for data in data_list:
 				if data and data != 'error' :
 					data = json.loads(data)
 					output.update(data)

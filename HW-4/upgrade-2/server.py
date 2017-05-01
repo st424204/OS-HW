@@ -15,7 +15,7 @@ lock = RedLock("lock",connection_details=[
 ])
 
 sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-server_address = ('node1',8888)
+server_address = ('myip',8888)
 sock.bind(server_address)
 sock.listen(1)
 
@@ -25,13 +25,16 @@ while 1:
 	try:
 		while 1:
 			data = connection.recv(1024)
+			print data
 			if data and over == 0:
 				data_list = data.split('\n')
 				for data in data_list:
 					if data == 'end':
-						over = 1
 						r.flushdb()
 						break
+					if data == 'over':
+                                                over = 1
+                                                break
 					if len(data) == 0:
 						break
 					lock.acquire()
@@ -76,7 +79,9 @@ while 1:
 					connection.sendall(data+"\n")
 					lock.release()
 			else:
-				break;
+				break
+			if over :
+				break
 	finally:
 		connection.close()
 
